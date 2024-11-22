@@ -6,3 +6,4 @@ nltk
 Flask
 FastAPI
 # Añade otras dependencias según se necesiten
+"PyQt5==5.15.4" 
