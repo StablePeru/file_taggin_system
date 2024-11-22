@@ -9,8 +9,9 @@ class Tag:
         self.category = category
 
 class FileTag:
-    def __init__(self, file_path, tag_id):
+    def __init__(self, id, file_path, tag_id):
+        self.id = id
         self.file_path = file_path
         self.tag_id = tag_id
 
-# Otros modelos según se necesiten
+# Puedes agregar más modelos según las necesidades futuras, como Categoría, Versiones, etc.
