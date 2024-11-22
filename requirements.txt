@@ -1,0 +1,8 @@
+PyQt5==5.15.4
+sqlite3
+elasticsearch==7.10.0
+transformers
+nltk
+Flask
+FastAPI
+# Añade otras dependencias según se necesiten
