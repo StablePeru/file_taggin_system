@@ -1,8 +1,8 @@
 # src/frontend/main_window.py
 
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QPushButton
-from widgets.tag_editor import TagEditor
-from widgets.search_panel import SearchPanel
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QPushButton, QFileDialog, QMessageBox, QInputDialog
+from .widgets.tag_editor import TagEditor
+from .widgets.search_panel import SearchPanel
 
 class MainWindow(QMainWindow):
     def __init__(self, backend):
@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         top_bar.addWidget(title)
         top_bar.addStretch()
 
-        # Botón para arrastrar y soltar archivos (implementación básica)
+        # Botón para agregar archivos
         self.upload_button = QPushButton("Agregar Archivos")
         self.upload_button.clicked.connect(self.upload_files)
         top_bar.addWidget(self.upload_button)
@@ -43,10 +43,27 @@ class MainWindow(QMainWindow):
         self.show()
 
     def upload_files(self):
-        # Implementar la lógica para arrastrar y soltar archivos o seleccionar archivos
-        from PyQt5.QtWidgets import QFileDialog
         files, _ = QFileDialog.getOpenFileNames(self, "Seleccionar Archivos", "", "Todos los Archivos (*)")
         if files:
-            # Por ahora, simplemente mostrar los archivos seleccionados
-            # Más adelante, implementaremos la lógica para etiquetarlos
-            print("Archivos seleccionados:", files)
+            for file_path in files:
+                # Aquí puedes implementar la lógica para etiquetar cada archivo seleccionado
+                # Por ahora, vamos a pedir al usuario que seleccione una etiqueta para cada archivo
+                tags = self.backend.tag_manager.get_all_tags()
+                if not tags:
+                    QMessageBox.warning(self, "Etiquetar Archivo", "No hay etiquetas disponibles. Por favor, agrega etiquetas primero.")
+                    return
+
+                tag_names = [f"{tag.name} ({tag.category})" for tag in tags]
+                tag, ok = QInputDialog.getItem(self, "Seleccionar Etiqueta", f"Selecciona una etiqueta para el archivo:\n{file_path}", tag_names, 0, False)
+                if ok and tag:
+                    # Obtener el ID de la etiqueta seleccionada
+                    selected_tag = None
+                    for t in tags:
+                        tag_display = f"{t.name} ({t.category})"
+                        if tag_display == tag:
+                            selected_tag = t
+                            break
+                    if selected_tag:
+                        self.backend.file_manager.add_tag_to_file(file_path, selected_tag.id)
+                        QMessageBox.information(self, "Etiquetar Archivo", f"Archivo '{file_path}' etiquetado con '{selected_tag.name}'.")
+            # Actualizar los resultados de búsqueda si es necesario
