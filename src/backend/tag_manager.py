@@ -20,6 +20,20 @@ class TagManager:
     def get_all_tags(self):
         return self.db.get_tags()
 
+    def get_tag_by_id(self, tag_id: int):
+        tags = self.get_all_tags()
+        for tag in tags:
+            if tag.id == tag_id:
+                return tag
+        return None
+
+    def get_tag_by_name_and_category(self, name: str, category: str):
+        tags = self.get_all_tags()
+        for tag in tags:
+            if tag.name == name and tag.category == category:
+                return tag
+        return None
+
     def organize_tags_by_category(self, category: str):
-        tags = self.db.get_tags()
+        tags = self.get_all_tags()
         return [tag for tag in tags if tag.category == category]

@@ -1,6 +1,9 @@
 # src/frontend/widgets/tag_editor.py
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QListWidget, QHBoxLayout, QInputDialog, QMessageBox
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QPushButton, QListWidget, QHBoxLayout,
+    QInputDialog, QMessageBox
+)
 
 class TagEditor(QWidget):
     def __init__(self, backend):
@@ -19,6 +22,7 @@ class TagEditor(QWidget):
 
         # Lista de etiquetas
         self.tag_list = QListWidget()
+        self.tag_list.setSelectionMode(QListWidget.MultiSelection)  # Permitir selección múltiple
         self.refresh_tags()
         layout.addWidget(self.tag_list)
 
@@ -55,41 +59,48 @@ class TagEditor(QWidget):
                 self.refresh_tags()
 
     def edit_tag(self):
-        selected_item = self.tag_list.currentItem()
-        if selected_item:
-            current_text = selected_item.text()
-            name_part = current_text.split(' (')[0]
-            category_part = current_text.split(' (')[1].rstrip(')')
+        selected_items = self.tag_list.selectedItems()
+        if selected_items:
+            for selected_item in selected_items:
+                current_text = selected_item.text()
+                name_part = current_text.split(' (')[0]
+                category_part = current_text.split(' (')[1].rstrip(')')
 
-            new_name, ok = QInputDialog.getText(self, "Editar Etiqueta", "Nuevo Nombre de la Etiqueta:", text=name_part)
-            if ok and new_name:
-                new_category, ok_cat = QInputDialog.getText(self, "Editar Etiqueta", "Nueva Categoría de la Etiqueta:", text=category_part)
-                if ok_cat and new_category:
-                    # Obtener el ID de la etiqueta actual
-                    tags = self.backend.tag_manager.get_all_tags()
-                    for tag in tags:
-                        if tag.name == name_part and tag.category == category_part:
-                            self.backend.tag_manager.edit_tag(tag.id, new_name, new_category)
-                            break
-                    self.refresh_tags()
+                new_name, ok = QInputDialog.getText(self, "Editar Etiqueta", "Nuevo Nombre de la Etiqueta:", text=name_part)
+                if ok and new_name:
+                    new_category, ok_cat = QInputDialog.getText(self, "Editar Etiqueta", "Nueva Categoría de la Etiqueta:", text=category_part)
+                    if ok_cat and new_category:
+                        # Obtener el ID de la etiqueta actual
+                        tags = self.backend.tag_manager.get_all_tags()
+                        for tag in tags:
+                            tag_display = f"{tag.name} ({tag.category})"
+                            if tag_display == current_text:
+                                self.backend.tag_manager.edit_tag(tag.id, new_name, new_category)
+                                break
+            self.refresh_tags()
         else:
-            QMessageBox.warning(self, "Editar Etiqueta", "Por favor, selecciona una etiqueta para editar.")
+            QMessageBox.warning(self, "Editar Etiqueta", "Por favor, selecciona al menos una etiqueta para editar.")
 
     def delete_tag(self):
-        selected_item = self.tag_list.currentItem()
-        if selected_item:
-            current_text = selected_item.text()
-            name_part = current_text.split(' (')[0]
-            category_part = current_text.split(' (')[1].rstrip(')')
-
-            confirm = QMessageBox.question(self, "Eliminar Etiqueta", f"¿Estás seguro de eliminar la etiqueta '{name_part}'?", QMessageBox.Yes | QMessageBox.No)
+        selected_items = self.tag_list.selectedItems()
+        if selected_items:
+            confirm = QMessageBox.question(
+                self, "Eliminar Etiqueta",
+                f"¿Estás seguro de eliminar las {len(selected_items)} etiquetas seleccionadas?",
+                QMessageBox.Yes | QMessageBox.No
+            )
             if confirm == QMessageBox.Yes:
-                # Obtener el ID de la etiqueta actual
                 tags = self.backend.tag_manager.get_all_tags()
-                for tag in tags:
-                    if tag.name == name_part and tag.category == category_part:
-                        self.backend.tag_manager.delete_tag(tag.id)
-                        break
+                for selected_item in selected_items:
+                    current_text = selected_item.text()
+                    name_part = current_text.split(' (')[0]
+                    category_part = current_text.split(' (')[1].rstrip(')')
+
+                    for tag in tags:
+                        tag_display = f"{tag.name} ({tag.category})"
+                        if tag_display == current_text:
+                            self.backend.tag_manager.delete_tag(tag.id)
+                            break
                 self.refresh_tags()
         else:
-            QMessageBox.warning(self, "Eliminar Etiqueta", "Por favor, selecciona una etiqueta para eliminar.")
+            QMessageBox.warning(self, "Eliminar Etiqueta", "Por favor, selecciona al menos una etiqueta para eliminar.")
