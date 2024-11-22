@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import (
     QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout,
     QPushButton, QFileDialog, QMessageBox
 )
-from widgets.tag_editor import TagEditor
-from widgets.search_panel import SearchPanel
-from widgets.tag_selection_dialog import TagSelectionDialog  # Importar el diálogo
+from .widgets.tag_editor import TagEditor
+from .widgets.search_panel import SearchPanel
+from .widgets.tag_selection_dialog import TagSelectionDialog  # Importar el diálogo
 
 class MainWindow(QMainWindow):
     def __init__(self, backend):
