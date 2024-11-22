@@ -19,6 +19,10 @@ class FileManager:
             'type': os.path.splitext(file_path)[1]
         }
 
+    def add_tags_to_file(self, file_path: str, tag_ids: list):
+        for tag_id in tag_ids:
+            self.add_tag_to_file(file_path, tag_id)
+
     def add_tag_to_file(self, file_path: str, tag_id: int):
         file_tag = FileTag(id=None, file_path=file_path, tag_id=tag_id)
         return self.db.add_file_tag(file_tag)

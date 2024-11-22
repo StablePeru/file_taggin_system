@@ -12,7 +12,7 @@ class Backend:
     def __init__(self):
         self.db_manager = DBManager()
         self.tag_manager = TagManager(self.db_manager)
-        self.file_manager = FileManager()
+        self.file_manager = FileManager(self.db_manager)
         self.search_engine = SearchEngine(self.db_manager)
         # Inicializar otros componentes como AI, ElasticSearch, etc.
 
