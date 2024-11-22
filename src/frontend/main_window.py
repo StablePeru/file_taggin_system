@@ -4,10 +4,10 @@ from PyQt5.QtWidgets import (
     QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout,
     QPushButton, QFileDialog, QMessageBox
 )
-from PyQt5.QtCore import Qt
 from .widgets.tag_editor import TagEditor
 from .widgets.search_panel import SearchPanel
 from .widgets.tag_selection_dialog import TagSelectionDialog
+from .widgets.tagged_files_list import TaggedFilesList  # Importar el nuevo widget
 
 class MainWindow(QMainWindow):
     def __init__(self, backend):
@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle("Sistema de Etiquetado de Archivos")
-        self.setGeometry(100, 100, 800, 600)  # Puedes ajustar el tamaño según prefieras
+        self.setGeometry(100, 100, 1000, 800)  # Ajustar el tamaño para acomodar más widgets
         self.setAcceptDrops(True)  # Habilitar arrastrar y soltar
 
         central_widget = QWidget()
@@ -40,9 +40,11 @@ class MainWindow(QMainWindow):
         # Widgets principales
         self.tag_editor = TagEditor(self.backend)
         self.search_panel = SearchPanel(self.backend)
+        self.tagged_files_list = TaggedFilesList(self.backend)  # Instanciar el nuevo widget
 
         main_layout.addWidget(self.tag_editor)
         main_layout.addWidget(self.search_panel)
+        main_layout.addWidget(self.tagged_files_list)  # Añadir al layout
 
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
@@ -74,8 +76,8 @@ class MainWindow(QMainWindow):
             # Crear una lista de etiquetas para selección
             tag_names = [f"{tag.name} ({tag.category})" for tag in tags]
 
-            # Crear y mostrar el diálogo de selección de etiquetas
-            tag_selection_dialog = TagSelectionDialog(tag_names, self)
+            # Crear y mostrar el diálogo de selección de etiquetas, pasando el file_path
+            tag_selection_dialog = TagSelectionDialog(file_path, tag_names, self)
             if tag_selection_dialog.exec_():
                 selected_tags = tag_selection_dialog.get_selected_tags()
                 if selected_tags:
@@ -93,3 +95,5 @@ class MainWindow(QMainWindow):
                         self, "Etiquetar Archivo",
                         f"Archivo '{file_path}' etiquetado con {len(selected_tag_ids)} etiquetas."
                     )
+        # Actualizar la lista de archivos etiquetados
+        self.tagged_files_list.refresh_files()

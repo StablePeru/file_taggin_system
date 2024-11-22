@@ -50,3 +50,9 @@ class FileManager:
     def remove_tag_from_file(self, file_tag_id: int):
         self.db.delete_file_tag(file_tag_id)
         app_logger.info(f"Etiqueta del archivo eliminada: FileTag ID {file_tag_id}")
+    
+    def get_all_tagged_files(self):
+        cursor = self.db.conn.cursor()
+        cursor.execute('SELECT DISTINCT file_path FROM file_tags')
+        rows = cursor.fetchall()
+        return [FileTag(file_path=row[0], tag_id=None) for row in rows]  # tag_id=None es irrelevante aquí
