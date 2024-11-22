@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLineEdit, QPushButton, QListWidget,
     QLabel, QMessageBox, QListWidgetItem, QHBoxLayout
 )
-from widgets.file_details import FileDetails  # Importar el widget de detalles
+from .file_details import FileDetails  # Importar el widget de detalles
 
 class SearchPanel(QWidget):
     def __init__(self, backend):
