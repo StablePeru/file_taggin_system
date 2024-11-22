@@ -8,7 +8,7 @@ class TagManager:
         self.db = db_manager
 
     def add_tag(self, name: str, category: str):
-        tag_id = self.db.add_tag(name, category)
+        tag_id = self.db.add_tag(Tag(id=None, name=name, category=category))
         return tag_id
 
     def edit_tag(self, tag_id: int, new_name: str, new_category: str):

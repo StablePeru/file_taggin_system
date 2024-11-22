@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import QDate
 from .file_details import FileDetails
 
+import datetime
+
 class SearchPanel(QWidget):
     def __init__(self, backend):
         super().__init__()
@@ -33,16 +35,21 @@ class SearchPanel(QWidget):
         # Tipo de archivo
         self.file_type_combo = QComboBox()
         self.file_type_combo.addItem("Todos los Tipos")
-        self.file_type_combo.addItems([".txt", ".pdf", ".jpg", ".png", ".docx", ".xlsx", ".py", ".md"])  # Puedes ampliar esta lista
+        self.file_type_combo.addItems([".txt", ".pdf", ".jpg", ".png", ".docx", ".xlsx", ".py", ".md", ".mp4", ".avi", ".mkv"])  # Ampliar la lista
         filters_layout.addWidget(QLabel("Tipo de Archivo:"))
         filters_layout.addWidget(self.file_type_combo)
 
-        # Tamaño máximo en KB
+        # Tamaño máximo y unidad
         self.size_spin = QSpinBox()
-        self.size_spin.setRange(0, 100000)  # 0 para sin límite
-        self.size_spin.setSuffix(" KB")
+        self.size_spin.setRange(0, 1000000)  # Ajustar el rango según sea necesario
+        self.size_spin.setValue(0)
+        self.size_spin.setSuffix(" ")
+
+        self.size_unit_combo = QComboBox()
+        self.size_unit_combo.addItems(["Bytes", "KB", "MB", "GB"])
         filters_layout.addWidget(QLabel("Tamaño Máximo:"))
         filters_layout.addWidget(self.size_spin)
+        filters_layout.addWidget(self.size_unit_combo)
 
         # Fecha de modificación
         self.date_edit = QDateEdit()
@@ -91,24 +98,30 @@ class SearchPanel(QWidget):
 
         # Aplicar filtros avanzados
         file_type = self.file_type_combo.currentText()
-        size_kb = self.size_spin.value()
+        size_value = self.size_spin.value()
+        size_unit = self.size_unit_combo.currentText()
         date_qdate = self.date_edit.date()
-        date_modified = date_qdate.toPyDate().toordinal()  # Convertir a timestamp
 
-        if date_modified:
-            # Convertir fecha a timestamp
-            import datetime
-            date_datetime = datetime.datetime.combine(date_qdate.toPyDate(), datetime.time.min)
-            date_timestamp = date_datetime.timestamp()
+        # Convertir tamaño a bytes según la unidad seleccionada
+        if size_unit == "Bytes":
+            size = size_value
+        elif size_unit == "KB":
+            size = size_value * 1024
+        elif size_unit == "MB":
+            size = size_value * 1024 * 1024
+        elif size_unit == "GB":
+            size = size_value * 1024 * 1024 * 1024
         else:
-            date_timestamp = None
+            size = None
+
+        # Convertir fecha a timestamp
+        date_datetime = datetime.datetime.combine(date_qdate.toPyDate(), datetime.time.min)
+        date_timestamp = date_datetime.timestamp()
 
         if file_type == "Todos los Tipos":
             file_type = None
-        if size_kb == 0:
+        if size_value == 0:
             size = None
-        else:
-            size = size_kb * 1024  # Convertir a bytes
 
         filtered_files = self.backend.search_engine.advanced_filters(
             files,

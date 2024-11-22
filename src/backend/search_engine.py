@@ -2,8 +2,9 @@
 
 from database.db_manager import DBManager
 from database.models import Tag, FileTag
+from src.database.db_manager import DBManager
+
 import os
-import time
 
 class SearchEngine:
     def __init__(self, db_manager: DBManager):
