@@ -33,7 +33,7 @@ Una herramienta para etiquetar y organizar archivos más allá de las limitacion
 1. **Clonar el Repositorio:**
 
    ```bash
-   git clone https://github.com/tu_usuario/file_tagging_system.git
+   git clone https://github.com/StablePeru/file_tagging_system.git
    cd file_tagging_system
    ```
 
