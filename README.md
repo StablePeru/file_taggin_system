@@ -85,17 +85,3 @@ pytest
 ## Licencia
 
 MIT
-
-## Crear un Archivo de Licencia (Opcional)
-
-Si deseas, puedes agregar una licencia. Por ejemplo, para la licencia MIT:
-
-Crea un archivo `LICENSE` en la raíz del proyecto con el contenido de la [Licencia MIT](https://opensource.org/licenses/MIT).
-
-## Agregar y Hacer Commit de la Documentación
-
-```bash
-git add README.md LICENSE
-git commit -m "Add initial README and license"
-git push
-´´´
